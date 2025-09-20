@@ -14,7 +14,9 @@ class Config:
 
     # Groq
     GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-    GROQ_API_URL = os.getenv("GROQ_API_URL", "https://api.groq.ai/v1")
+    GROQ_API_URL = os.getenv(
+        "GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions"
+    )
 
     # Token expiration (seconds)
     JWT_ACCESS_EXPIRES_SECONDS = int(os.getenv("JWT_ACCESS_EXPIRES_SECONDS", 3600))

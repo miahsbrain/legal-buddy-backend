@@ -32,7 +32,9 @@ class AIAgent:
         )
 
         try:
-            xml = self.client.chat_completion(GROQ_SYSTEM_PROMPT, user_prompt)
+            xml = self.client.chat_completion(
+                system_prompt=GROQ_SYSTEM_PROMPT, user_prompt=user_prompt
+            )
         except Exception as e:
             raise RuntimeError(f"AI call failed: {e}")
 

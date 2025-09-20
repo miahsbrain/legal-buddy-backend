@@ -22,33 +22,38 @@ class GroqClient:
         self,
         system_prompt: str,
         user_prompt: str,
-        model: str = "groq-1",
+        model: str = "llama-3.3-70b-versatile",
         max_tokens: int = 3000,
         timeout: int = 30,
     ):
-        payload = {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            "max_tokens": max_tokens,
-            "temperature": 0.0,
-        }
-        url = self.api_url.rstrip("/") + "/chat/completions"
-        resp = requests.post(url, headers=self.headers, json=payload, timeout=timeout)
-        if resp.status_code != 200:
-            raise RuntimeError(f"Groq API error: {resp.status_code} - {resp.text}")
-        data = resp.json()
-        # try to be robust with response shapes
-        choices = data.get("choices")
-        if choices and isinstance(choices, list) and choices:
-            # chat-style
-            content = (
-                choices[0].get("message", {}).get("content")
-                or choices[0].get("text")
-                or ""
+        try:
+            payload = {
+                "model": model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                "max_tokens": max_tokens,
+                "temperature": 1,
+            }
+            resp = requests.post(
+                self.api_url, headers=self.headers, json=payload, timeout=timeout
             )
-            return content
-        # fallback
-        return data.get("text", "")
+            if resp.status_code != 200:
+                raise RuntimeError(f"Groq API error: {resp.status_code} - {resp.text}")
+            data = resp.json()
+            # try to be robust with response shapes
+            choices = data.get("choices")
+            if choices and isinstance(choices, list) and choices:
+                # chat-style
+                content = (
+                    choices[0].get("message", {}).get("content")
+                    or choices[0].get("text")
+                    or ""
+                )
+                return content
+            # fallback
+            return data.get("text", "")
+
+        except Exception as e:
+            print("There was an error calling groq api:", e)
