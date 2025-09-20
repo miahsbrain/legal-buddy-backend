@@ -63,10 +63,10 @@ def login():
         {
             "success": True,
             "data": {
-                "userId": uid,
-                "email": user["email"],
-                "first_name": user.get("first_name"),
-                "last_name": user.get("last_name"),
+                # "userId": uid,
+                # "email": user["email"],
+                # "first_name": user.get("first_name"),
+                # "last_name": user.get("last_name"),
                 "accessToken": access,
                 "refreshToken": refresh,
             },

@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 
 from flask import Flask, jsonify
+from flask_cors import CORS  # <-- add this
 
 from api.config import Config
 from api.extensions import db, jwt
@@ -20,6 +21,13 @@ def create_app():
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(
         seconds=int(os.getenv("JWT_REFRESH_EXPIRES_SECONDS", 60 * 60 * 24 * 30))
     )
+
+    # --- CORS setup ---
+    allowed_origins = os.getenv(
+        "CORS_ALLOWED_ORIGINS", "*"
+    )  # e.g. "http://localhost:5173,http://127.0.0.1:3000"
+    origins_list = [origin.strip() for origin in allowed_origins.split(",")]
+    CORS(app, resources={r"/*": {"origins": origins_list}}, supports_credentials=True)
 
     # init extensions
     jwt.init_app(app)
