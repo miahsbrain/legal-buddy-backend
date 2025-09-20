@@ -12,12 +12,16 @@ class UserService:
         self.blacklist = db["token_blacklist"]
 
     # ---------- CRUD ----------
-    def create_user(self, email: str, password: str):
+    def create_user(
+        self, email: str, password: str, first_name: str = None, last_name: str = None
+    ):
         if self.col.find_one({"email": email}):
             raise ValueError("Email already registered")
         hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
         res = self.col.insert_one(
             {
+                "first_name": first_name,
+                "last_name": last_name,
                 "email": email,
                 "password": hashed.decode("utf-8"),
                 "createdAt": datetime.datetime.utcnow().isoformat(),

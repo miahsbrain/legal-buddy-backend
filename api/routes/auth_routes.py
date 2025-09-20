@@ -20,10 +20,14 @@ def signup():
     data = request.get_json() or {}
     email = data.get("email")
     password = data.get("password")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
     if not email or not password:
         return jsonify({"success": False, "error": "Email and password required"}), 400
     try:
-        uid = user_service.create_user(email, password)
+        uid = user_service.create_user(
+            email=email, password=password, first_name=first_name, last_name=last_name
+        )
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
 
@@ -58,7 +62,36 @@ def login():
     return jsonify(
         {
             "success": True,
-            "data": {"userId": uid, "accessToken": access, "refreshToken": refresh},
+            "data": {
+                "userId": uid,
+                "email": user["email"],
+                "first_name": user.get("first_name"),
+                "last_name": user.get("last_name"),
+                "accessToken": access,
+                "refreshToken": refresh,
+            },
+        }
+    ), 200
+
+
+@auth_bp.route("/me", methods=["GET"])
+@jwt_required()
+def me():
+    uid = get_jwt_identity()  # this is the user id you stored in the token
+    user = user_service.get_by_id(uid)
+
+    if not user:
+        return jsonify({"success": False, "error": "User not found"}), 404
+
+    return jsonify(
+        {
+            "success": True,
+            "data": {
+                "userId": str(user["_id"]),
+                "email": user["email"],
+                "firstName": user.get("first_name"),
+                "lastName": user.get("last_name"),
+            },
         }
     ), 200
 
