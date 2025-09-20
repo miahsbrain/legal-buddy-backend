@@ -55,3 +55,6 @@ def create_app():
 
 # export app for Vercel
 app = create_app()
+
+if __name__ == "__main__":
+    app.run(debug=True)

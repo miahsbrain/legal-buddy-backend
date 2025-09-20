@@ -45,8 +45,8 @@ def extract_text_from_file(file_storage):
                 except Exception:
                     continue
             return "\n".join(pages)
-    except Exception:
-        pass
+    except Exception as e:
+        print("There was an error extracting text:", e)
 
     # naive utf-8 decode fallback (may fail for binaries)
     try:
